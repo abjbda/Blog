@@ -10,6 +10,4 @@ public interface CommentService {
     List<Comment> listCommentByBlogId(Long blogId);
 
     Comment saveComment(Comment comment);
-
-//    void postComment(Comment comment, HttpSession session);
 }

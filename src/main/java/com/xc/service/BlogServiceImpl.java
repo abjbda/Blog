@@ -49,7 +49,6 @@ public class BlogServiceImpl implements BlogService {
         return b;
     }
 
-
     @Override
     public Page<Blog> listBlog(Pageable pageable, BlogQuery blog) {
         return blogRepository.findAll((root, cq, cb) -> {
@@ -95,7 +94,8 @@ public class BlogServiceImpl implements BlogService {
 
     @Override
     public Map<Integer, List<Blog>> archiveBlog() {
-        List<Blog> blogs = blogRepository.findAllByUpdateTime();
+//        List<Blog> blogs = blogRepository.findAllByUpdateTime();
+        List<Blog> blogs = blogRepository.findAll(new Sort(Sort.Direction.DESC, "updateTime"));
         LinkedHashMap<Integer, List<Blog>> groupingBlogsByYear = new LinkedHashMap<>();
         blogs.forEach(blog -> {
             Integer year = blog.getUpdateTime().getYear() + 1900;

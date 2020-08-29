@@ -22,7 +22,7 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public List<Comment> listCommentByBlogId(Long blogId) {
         Sort sort = new Sort("createTime");
-        List<Comment> comments = commentRepository.findByBlogIdAndParentCommentNull(blogId,sort);
+        List<Comment> comments = commentRepository.findByBlogIdAndParentCommentNull(blogId, sort);
         return divideComments(comments);
     }
 
@@ -39,24 +39,9 @@ public class CommentServiceImpl implements CommentService {
         return commentRepository.save(comment);
     }
 
-//    @Override
-//    public void postComment(Comment comment, HttpSession session) {
-//        @Override
-//        public String post(Comment comment, HttpSession session) {
-//            Long blogId = comment.getBlog().getId();
-//            comment.setBlog(blogService.getBlog(blogId));
-//            User user = (User) session.getAttribute("user");
-//            if (user != null) {
-//                comment.setAvatar(user.getAvatar());
-//                comment.setAdminComment(true);
-//            } else {
-//                comment.setAvatar(avatar);
-//            }
-//            commentService.saveComment(comment);
-//    }
-
     /**
      * 循环每个顶级的评论节点
+     *
      * @param comments
      * @return
      */
@@ -64,7 +49,7 @@ public class CommentServiceImpl implements CommentService {
         List<Comment> commentsCopy = new ArrayList<>();
         for (Comment comment : comments) {
             Comment c = new Comment();
-            BeanUtils.copyProperties(comment,c);
+            BeanUtils.copyProperties(comment, c);
             commentsCopy.add(c);
         }
         //合并评论的各层子代到第一级子代集合中
@@ -74,6 +59,7 @@ public class CommentServiceImpl implements CommentService {
 
     /**
      * 合并顶部评论下所以的子级评论
+     *
      * @param comments root根节点，blog不为空的对象集合
      * @return
      */
@@ -90,6 +76,7 @@ public class CommentServiceImpl implements CommentService {
 
     /**
      * 递归迭代，剥洋葱
+     *
      * @param comments 被迭代的对象
      * @return
      */
