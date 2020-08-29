@@ -14,11 +14,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.criteria.*;
+import java.time.LocalDate;
 import java.util.*;
 
 @Service
@@ -41,7 +41,7 @@ public class BlogServiceImpl implements BlogService {
             throw new NotFoundException("The blog is not longer available");
         }
         Blog b = new Blog();
-        BeanUtils.copyProperties(blog,b);
+        BeanUtils.copyProperties(blog, b);
         String content = b.getContent();
         b.setContent(MarkdownUtils.markdownToHtmlExtensions(content));
 
@@ -55,7 +55,7 @@ public class BlogServiceImpl implements BlogService {
         return blogRepository.findAll((root, cq, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
             if (!"".equals(blog.getTitle()) && blog.getTitle() != null) {
-                predicates.add(cb.like(root.<String>get("title"), "%"+blog.getTitle()+"%"));
+                predicates.add(cb.like(root.<String>get("title"), "%" + blog.getTitle() + "%"));
             }
             if (blog.getCategoryId() != null) {
                 predicates.add(cb.equal(root.<Category>get("category").get("id"), blog.getCategoryId()));
@@ -65,7 +65,7 @@ public class BlogServiceImpl implements BlogService {
             }
             cq.where(predicates.toArray(new Predicate[predicates.size()]));
             return null;
-        },pageable);
+        }, pageable);
     }
 
     @Override
@@ -77,30 +77,33 @@ public class BlogServiceImpl implements BlogService {
     public Page<Blog> listBlog(Long tagId, Pageable pageable) {
         return blogRepository.findAll((root, cq, cb) -> {
             Join join = root.join("tags");
-            return cb.equal(join.get("id"),tagId);
-        },pageable);
+            return cb.equal(join.get("id"), tagId);
+        }, pageable);
     }
 
     @Override
     public Page<Blog> listBlog(String query, Pageable pageable) {
-        return blogRepository.findByQuery(query,pageable);
+        return blogRepository.findByQuery(query, pageable);
     }
 
     @Override
     public List<Blog> listRecommendBlogTop(Integer size) {
-        Sort sort = new Sort(Sort.Direction.DESC,"updateTime");
+        Sort sort = new Sort(Sort.Direction.DESC, "updateTime");
         Pageable pageable = new PageRequest(0, size, sort);
         return blogRepository.findTop(pageable);
     }
 
     @Override
-    public Map<String, List<Blog>> archiveBlog() {
-        List<String> years = blogRepository.findGroupYear();
-        Map<String, List<Blog>> map = new HashMap<>();
-        for (String year : years) {
-            map.put(year, blogRepository.findByYear(year));
-        }
-        return map;
+    public Map<Integer, List<Blog>> archiveBlog() {
+        List<Blog> blogs = blogRepository.findAllByUpdateTime();
+        LinkedHashMap<Integer, List<Blog>> groupingBlogsByYear = new LinkedHashMap<>();
+        blogs.forEach(blog -> {
+            Integer year = blog.getUpdateTime().getYear() + 1900;
+            groupingBlogsByYear.computeIfAbsent(year, v -> new ArrayList<>());
+            groupingBlogsByYear.get(year).add(blog);
+        });
+
+        return groupingBlogsByYear;
     }
 
     @Override
@@ -129,7 +132,7 @@ public class BlogServiceImpl implements BlogService {
         if (b == null) {
             throw new NotFoundException("The blog is not longer available");
         }
-        BeanUtils.copyProperties(blog,b, MyBeanUtils.getNullPropertyNames(blog));
+        BeanUtils.copyProperties(blog, b, MyBeanUtils.getNullPropertyNames(blog));
         b.setUpdateTime(new Date());
         return blogRepository.save(b);
     }

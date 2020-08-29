@@ -42,8 +42,8 @@
                     <h3 class="ui teal header">Archives</h3>
                 </div>
                 <div class="right aligned column">
-                    <h2 class="ui orange header m-inline-block m-text-thin" th:text="${blogCount}"> 114 </h2> total
-                    artitles
+                    <h2 class="ui orange header m-inline-block m-text-thin" th:text="${blogCount}"> 114 </h2> <span
+                        class="ui header m-text-thin">Articles</span>
                 </div>
             </div>
         </div>
@@ -55,19 +55,19 @@
                    th:each="blog : ${item.value}">
           <span>
             <i class="mini teal circle icon"></i><span th:text="${blog.title}">关于刻意练习的清单</span>
-            <div class="ui teal basic left pointing label m-padded-mini "
+            <div class="ui teal basic left pointing label m-padded-mini"
                  th:text="${#dates.format(blog.updateTime,' MM-dd')}">9月03</div>
           </span>
-                    <div class="ui orange basic left pointing label m-padded-mini " th:text="${blog.flag}">原创</div>
+                    <div class="ui orange basic left pointing label m-padded-mini" th:text="${blog.flag}">原创</div>
                 </a>
 
                 <!--/*-->
                 <a href="#" target="_blank" class="item">
           <span>
             <i class="mini teal circle icon"></i>关于刻意练习的清单
-            <div class="ui teal basic left pointing label m-padded-mini ">9月03</div>
+            <div class="ui teal basic left pointing label m-padded-mini">9月03</div>
           </span>
-                    <div class="ui orange basic left pointing label m-padded-mini ">原创</div>
+                    <div class="ui orange basic left pointing label m-padded-mini">原创</div>
                 </a>
                 <a href="#" target="_blank" class="item">
           <span>
